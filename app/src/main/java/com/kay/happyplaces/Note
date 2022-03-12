@@ -6,3 +6,6 @@ Todo
     -> fragment 3: Description fragment?
 
 (2) Setup the RecyclerView.
+    -> add a RecyclerView in the ListHappyPlaceFragment
+    -> Design the Row Layout for the recyclerView
+    -> create the ListAdapter

@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/happyPlacesFragment"
-        android:name="com.kay.happyplaces.fragments.HappyPlacesFragment"
+        android:name="com.kay.happyplaces.fragments.ListHappyPlacesFragment"
         android:label="fragment_happy_places"
-        tools:layout="@layout/fragment_happy_places" >
+        tools:layout="@layout/fragment_list_happy_places" >
         <action
             android:id="@+id/action_happyPlacesFragment_to_addHappyPlaceFragment"
             app:destination="@id/addHappyPlaceFragment" />
