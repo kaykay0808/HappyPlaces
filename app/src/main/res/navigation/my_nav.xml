@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/my_nav"
+    app:startDestination="@id/happyPlacesFragment">
+
+    <fragment
+        android:id="@+id/happyPlacesFragment"
+        android:name="com.kay.happyplaces.fragments.HappyPlacesFragment"
+        android:label="fragment_happy_places"
+        tools:layout="@layout/fragment_happy_places" >
+        <action
+            android:id="@+id/action_happyPlacesFragment_to_addHappyPlaceFragment"
+            app:destination="@id/addHappyPlaceFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addHappyPlaceFragment"
+        android:name="com.kay.happyplaces.fragments.AddHappyPlaceFragment"
+        android:label="fragment_add_happy_place"
+        tools:layout="@layout/fragment_add_happy_place" />
+</navigation>

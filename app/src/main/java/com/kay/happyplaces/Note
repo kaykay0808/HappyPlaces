@@ -1,0 +1,8 @@
+Todo
+
+(1) Create the navigation graph and the fragments.
+    -> Fragment 1: HappyPlacesFragment
+    -> Fragment 2: AddHappyPlaceFragment
+    -> fragment 3: Description fragment?
+
+(2) Setup the RecyclerView.
