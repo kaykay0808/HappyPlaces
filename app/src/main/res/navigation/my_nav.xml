@@ -18,5 +18,9 @@
         android:id="@+id/addHappyPlaceFragment"
         android:name="com.kay.happyplaces.fragments.AddHappyPlaceFragment"
         android:label="fragment_add_happy_place"
-        tools:layout="@layout/fragment_add_happy_place" />
+        tools:layout="@layout/fragment_add_happy_place" >
+        <action
+            android:id="@+id/action_addHappyPlaceFragment_to_happyPlacesFragment"
+            app:destination="@id/happyPlacesFragment" />
+    </fragment>
 </navigation>

@@ -4,6 +4,7 @@ Todo
     -> Fragment 1: HappyPlacesFragment
     -> Fragment 2: AddHappyPlaceFragment
     -> fragment 3: Description fragment?
+    -> Add a fragmentContainerView inside Activity Xml
 
 (2) Setting up resources
     -> create "add" vector - V
