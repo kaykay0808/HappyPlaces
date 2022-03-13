@@ -5,7 +5,15 @@ Todo
     -> Fragment 2: AddHappyPlaceFragment
     -> fragment 3: Description fragment?
 
-(2) Setup the RecyclerView.
+(2) Setting up resources
+    -> create "add" vector - V
+    -> change color resources -V
+    -> adding google material design > implementation 'com.google.android.material:material:1.0.0' <
+    -> create dimens: "fab_margin" >16dp< - V
+    -> create custom theme is for No ActionBar
+    -> Create a custom theme is added to our toolbar
+
+(3) Setup the RecyclerView.
     -> add a RecyclerView in the ListHappyPlaceFragment
     -> Design the Row Layout for the recyclerView
     -> create the ListAdapter
