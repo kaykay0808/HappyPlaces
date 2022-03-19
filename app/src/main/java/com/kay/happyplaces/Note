@@ -5,6 +5,7 @@ Todo
     -> Fragment 2: AddHappyPlaceFragment
     -> fragment 3: Description fragment?
     -> Add a fragmentContainerView inside Activity Xml
+    -> Designing the addHappyPlaceFragment Layout
 
 (2) Setting up resources
     -> create "add" vector - V
@@ -13,8 +14,48 @@ Todo
     -> create dimens: "fab_margin" >16dp< - V
     -> create custom theme is for No ActionBar
     -> Create a custom theme is added to our toolbar
+    -> adding all the constant values in android constant resource file as dimen, string, color.xml.
 
 (3) Setup the RecyclerView.
     -> add a RecyclerView in the ListHappyPlaceFragment
     -> Design the Row Layout for the recyclerView
     -> create the ListAdapter
+
+(4) Create functionality that select the date.
+    -> in xml go to add layout. In edit Text date add two new values.
+        -> "focusable"="false" and focusableInTouchMode=False. this will make it not clickable.
+    -> Back to our code (add.kt) we want to create an instance to the calendar.
+        -> create a member variable and call it cal which will be a Calendar.getInstance()
+    -> add "private lateinit var dateSetListener: DatePickerDialog.OnDateSetListener"
+        -> initiate this inside onCreate, dataSetListener = DatePickerDialog.OnDateSetListener{} (we wait for the user to pick the date.)
+            -> inside the body {
+            view, year, month, dayOfMonth ->
+            cal.set(Calender.YEAR, year)
+            cal.set(Calender.MONTH, month)
+            cal.set(Calender.DAY_OF_MONTH, dayOfMonth)
+            }
+        -> make the whole class as View.OnClickListener (import the view and implement the members.)
+        -> inside the onClick method
+            -> create a when method (v!!.id) (whatever view we clicked on is going to be that "v", we might change this to another name)
+            -> inside when body {} we going to check if the id is the different edit text layout that we created.
+                -> example R.id.et_date ->{
+                    DatePickerDialog(context, dateSetListener, cal.get(Calender.YEAR), cal.get(Calender.MONTH), cal.get(Calender.DAY_OF_MONTH))
+                }
+
+            and finally we want to show the datePicker -> .show()
+
+            -> add in et_date.setOnClickListener(this) below the dateSetListener
+            (we can test it now)
+
+            -> create a new function and call it updateDAteInView()
+            -> create  a new object inside the function and call it myFormat which will be "dd.MM.yyyy"
+            -> create a new object and call it sdf (simpleDateFormat) which will be SimpleDateFormat(myFormat, Locale.getDefault())
+            -> now set the text -> et_date.setText(sdf.format(cal.time).toString())
+            -> call the function inside the dataSetListener
+
+            DONE what we did. create a datePicker and a function that updates the date when the user picks a date.
+
+
+
+
+
