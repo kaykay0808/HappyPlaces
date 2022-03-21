@@ -53,7 +53,76 @@ Todo
             -> now set the text -> et_date.setText(sdf.format(cal.time).toString())
             -> call the function inside the dataSetListener
 
-            DONE what we did. create a datePicker and a function that updates the date when the user picks a date.
+            DONE what we did: create a datePicker and a function that updates the date when the user picks a date.
+
+(5) Using The Third Party Library DEXTER for permission handling
+    -> add a SetOnClickListener to our tvAddImage, which is our textView button. The context will be "this"
+    -> in our onClick function add in R.id.tv_add_image (if we we click on this imageView)
+        -> we will now create an alertDialog box in the iv_place_image
+            -> create a new val object and call it pictureDialog which will be an AlertDialog.builder(this) (we are using builder to build it)
+            -> under this line we can create a title -> pictureDialog.setTitle("Select Action")
+            -> create a new val object which will hold two choices. Call it pictureDialogItems which will be arrayOg("select photo from gallery", "capture photo from camera")
+            -> now we can go ahead and use this picture Dialog to set the item that it should display -> pictureDialog.setItems(pictureDialogItems) {}
+                -> we will create a Lambda function inside this body and create two value names "dialog" and "which"
+                in the Lambda we will create a when Statement which will hold "which"
+                    -> when(which) {}
+                        -> in this body we want 0 ->  "run some codes" and 1 -> create a Toast
+                        and of course we want to show this pictureDialog
+                            -> outside the pictureDialog.setItems body add pictureDialog.show()
+                        -> for the 0 -> we will create a new function named choosePhotoFromGallery
+                            -> in manifest we need 3 permission "read external storage", "write external storage" and "camera"
+                                -> <user-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+                                <user-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+                                <user-permission android:name="android.permission.CAMERA" />
+
+                -> ADD Dexter library
+                    -> go to this page https://github.com/Karumi/Dexter#permission-dialog-not-being-shown
+                        -> add the dependency inside build.gradle
+
+                -> back to our choosePhotoFromGallery function.
+                    -> inside this body we need to ask for permission -> Dexter.withActivity(this).withPermissions(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ).withListener
+                -> go to documentation and copy and paste the rest. (it is under the multiple permissions, since we are using multiply permission)
+                -> we need to convert java to kotlin
+                    -> instead of: new MultiplePermissionsListener() change to -> (object: MultiplePermissionsListener
+                    -> remove ;
+                    -> instead of: Override change to  -> override
+                    -> instead of: public void change to  -> fun
+                    -> instead of: MultiplePermissionsRepost report change to -> report : MultiplePermissionsReport
+                        -> import MultiplePermissionsReport and PermissionRequest
+                    -> instead of: List<PermissionRequest> permissions change to -> permissions: MutableList<PermissionRequest>
+                    -> instead of: PermissionToken token change to ->  token : PermissionToken
+
+                -> inside the body of onPermissionsChecked. Create an if statement and pass in report that calls areAllPermissionsGranted
+                    -> if(report.areAllPermissionsGranted(){run a toast inside here})
+                        -> the Toast message will be "Storage READ/WRITE permission are granted. now you can select an image from gallery"
+                        -> the length is short
+
+                -> inside onPermissionRationaleShouldBeShown body we will call a function name showRationalDialogForPermissions()
+                    -> inside this new function we will create an alertDialog
+                        -> AlertDialog.builder(this).setMessage("it looks like you have turned off permission required. It can be enabled under the Application Settings").setPositiveButton("GO TO SETTINGS")
+                            -> what will happen when we click on the positive Button?
+                                -> {_, _ ->
+                                    try {
+                                        copy and paste some intent stuff here
+                                    } catch (e: ActivityNotFoundException) {
+                                        e.printStackTrace()
+                                    }
+
+                        -> set the negative button
+                            -> }.setNegativeButton("Cancel"){dialog, _ ->
+                                dialog.dismiss()
+                            }
+
+                        -> finally we need to add ).onSameThread().check() (below override fun onPermissionRationaleShouldBeShown)
+                        -> we can test it now
+                        -> maybe fix some nullable
+
+
+
+
 
 
 
