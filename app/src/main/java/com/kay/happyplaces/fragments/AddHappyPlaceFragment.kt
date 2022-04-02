@@ -1,12 +1,14 @@
 package com.kay.happyplaces.fragments
 
 import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +24,7 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.kay.happyplaces.R
 import com.kay.happyplaces.databinding.FragmentAddHappyPlaceBinding
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -32,6 +35,13 @@ class AddHappyPlaceFragment : Fragment(), View.OnClickListener {
 
     private var cal = Calendar.getInstance()
     private lateinit var dateSetListener: DatePickerDialog.OnDateSetListener
+
+    companion object {
+        // variable for Gallery selection which will be used in the onActivityResult
+        private const val GALLERY = 1
+        // variable for CAMERA selection which will be used in the onActivityResult
+        private const val CAMERA = 2
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -102,28 +112,27 @@ class AddHappyPlaceFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun choosePhotoFromGallery() {
-        Dexter.withContext(context).withPermissions(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ).withListener(object : MultiplePermissionsListener {
-            override fun onPermissionsChecked(report: MultiplePermissionsReport?) {/* ... */
-                if (report!!.areAllPermissionsGranted()) {
-                    Toast.makeText(
-                        context,
-                        "Storage READ/WRITE permission are granted. now you can select an image from gallery",
-                        Toast.LENGTH_SHORT
-                    ).show()
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == GALLERY) {
+                if (data != null) {
+                    val contentURI = data.data
+                    try {
+                        val selectImageBitmap =
+                            MediaStore.Images.Media.getBitmap(context?.contentResolver, contentURI)
+                        binding.ivPlaceImage.setImageBitmap(selectImageBitmap)
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                        Toast.makeText(
+                            context,
+                            "Failed to load the image from gallery",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             }
-
-            override fun onPermissionRationaleShouldBeShown(
-                permissions: MutableList<PermissionRequest>,
-                token: PermissionToken
-            ) {/* ... */
-                showRationalDialogForPermissions()
-            }
-        }).onSameThread().check()
+        }
     }
 
     private fun showRationalDialogForPermissions() {
@@ -143,6 +152,31 @@ class AddHappyPlaceFragment : Fragment(), View.OnClickListener {
             }.show()
     }
 
+    private fun choosePhotoFromGallery() {
+        Dexter.withContext(context).withPermissions(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ).withListener(object : MultiplePermissionsListener {
+            override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
+                // After all the permission are granted launch the gallery to select and image.
+                if (report!!.areAllPermissionsGranted()) {
+                    val galleryIntent = Intent(
+                        Intent.ACTION_PICK,
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                    )
+                    startActivityForResult(galleryIntent, GALLERY)
+                }
+            }
+
+            // when the user choose no
+            override fun onPermissionRationaleShouldBeShown(
+                permissions: MutableList<PermissionRequest>?,
+                token: PermissionToken?
+            ) {
+                showRationalDialogForPermissions()
+            }
+        }).onSameThread().check()
+    }
 
     private fun updateDateInView() {
         val myFormat = "dd.MM.yyyy"

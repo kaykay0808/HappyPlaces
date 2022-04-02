@@ -120,6 +120,28 @@ Todo
                         -> we can test it now
                         -> maybe fix some nullable
 
+(7) Adding The gallery picking functionality and capture a live photo
+    -> The first thing I want to add is the intent that allows me to go to the media storage
+        -> Go to our choosePhotoFromGallery() function and inside onPermissionChecked we want to change out our Toast message with our intent.
+            -> so inside if statement body. create a val object name "galleryIntent" which will be Intent(Intent.ACTION_PICK, MediaStore.Image.EXTERNAL_CONTENT_URI)
+            -> next thing we need to do is to start this intent.
+            -> startActivityForResult(galleryIntent, GALLERY)
+        -> create a companion object below updateDateInView (check if we can put it more up in the class)
+            -> The gallery should be a static variable so inside companion object create "private const val GALLERY = 1"
+        -> startActivityForResult is now waiting for a result (so somethings comes back)
+        -> create a new function -> public override fun onActivity(requestCode: Int, resultCode: Int, data: Intent?)
+        -> inside the body function create an if statement and pass in the resultCode to check if its ok ( == Activity.RESULT_OK)
+            -> if that is the case create another if statement in the first if statement body and check if requestCode is GALLERY <- (GALLERY is the variable we created in our startActivityForResult)
+                -> so if it's GALLERY we want to create another if statement to check if data is not null, and we want to run some codes if it's not null
+                -> create a val object inside this body if statement and call it contentURI which will be data.data
+                -> below this we want create a try block
+                    -> inside the try block body create a new val object named selectImageBitmap which will be MediaStore.images.Media.getBitmap(this.contentResolver, contentURI)
+                        -> once we have the bitmap we can set it to iv_place_image.setImageBitmap(selectedImageBitmap)
+                        -> we ofc need a catch block which will have (e: IOException)
+                            -> and in this body we need e.printStackTrace()
+                            -> and we need a toast which says "failed to load the image from gallery" and the length is short.
+
+
 
 
 
