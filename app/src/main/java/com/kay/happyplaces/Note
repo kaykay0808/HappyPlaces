@@ -141,11 +141,34 @@ Todo
                             -> and in this body we need e.printStackTrace()
                             -> and we need a toast which says "failed to load the image from gallery" and the length is short.
 
+(8) Adding the Camera picking function
+    -> create a new function and call it takePhotoFromCamera
+        -> in this body function, just copy and paste the same from choose photo from gallery.
+        -> now we need to make some changes: below the permissions we want to add manifest.permission.CAMERA
+        -> we need to make the change with our intent (inside our if statement) change the object to cameraIntent instead of galleryIntent.
+            -> and this will be instead Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            -> inside of startActivityForResult(GalleryIntent, CAMERA) change it to startActivityForResult(cameraIntent, CAMERA)
+            -> inside our onClick function we can replace the toast message with our new function: takePhotoFromCamera()
+        -> In onActivityResult function open a new else if block -> pass in requestCode to check if its CAMERA
+            -> create a new val object and call it thumbnail which is a type Bitmap and this will be data!!.extras!!.get("data") as Bitmap
+            -> now we want to set the image. so ivPlaceImage.setImageBitmap(thumbnail)
 
-
-
-
-
+(9) Storing the images on the devices
+    -> create a function and do this step inside the function
+    // TODO (1) create val object and call it wrapper which will be a ContextWrapper(applicationContext)
+            // TODO (2) create a variable object named file which will be wrapper.getDir(IMAGE_DIRECTORY, Context.MODE_PRIVATE), we just set the directory
+            // TODO (3) now use the file to set the 'file name' -> so use our object file which will be FILE() function. pass in the file and "${UUID.randomUUID()}.jpg"
+            // TODO (4) now that we have the file we can store it. Use file outputStreams for that. Open a try block.
+            // TODO (5) create a catch block to and pass in (e: IOException) and inside the body we want an e.printStackTrace() if something goes wrong.
+            // TODO (5) create a val object inside the try block and call it stream which wil be a type OutputStream, and all this wil be a FileOutputStream(file)
+            // TODO (6) now we can set the bitmap compress format and quality below -> bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+            // TODO (7) now we need flush the stream so set the stream that we created to flush()
+            // TODO (8) Then we need to close set the stream to close with close()
+            // TODO (9) The compiler expect us to return Uri so after the catch block we want to add in Uri.parse() and pass in file.absolutePath
+            // TODO (10) now we can call this method inside onActivityResult and pass in our "selectedImageBitmap"
+            // TODO (11) when we call the function inside onActivityResult we want to make make it a val object with same name
+            // TODO (12) create a Log.e below that -> Log.e("Saved image", "Path :: $savedImageToInternalStorage")
+            // TODO (13) copy and paste and do the same with camera and replace the error with our thumbnail instead
 
 
 
