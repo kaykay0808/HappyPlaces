@@ -20,6 +20,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
@@ -28,6 +30,9 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.kay.happyplaces.R
 import com.kay.happyplaces.databinding.FragmentAddHappyPlaceBinding
+import com.kay.happyplaces.models.HappyPlaceModelEntity
+import com.kay.happyplaces.models.HappyPlaceViewModel
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -43,6 +48,14 @@ class AddHappyPlaceFragment : Fragment(), View.OnClickListener {
 
     private var cal = Calendar.getInstance()
     private lateinit var dateSetListener: DatePickerDialog.OnDateSetListener
+
+    private val happyPlaceViewModel: HappyPlaceViewModel by viewModels()
+
+    // We may not variable below
+    private var uriFilePath: Uri? = null
+    private var latitude: Double = 0.0
+    private var longitude: Double = 0.0
+    // ---------------------------- //
 
     companion object {
         // variable for Gallery selection which will be used in the onActivityResult
@@ -86,6 +99,7 @@ class AddHappyPlaceFragment : Fragment(), View.OnClickListener {
 
         binding.etDate.setOnClickListener(this)
         binding.tvAddImage.setOnClickListener(this)
+        binding.btnSave.setOnClickListener(this)
     }
 
     override fun onClick(theViewWeClicked: View?) {
@@ -114,6 +128,9 @@ class AddHappyPlaceFragment : Fragment(), View.OnClickListener {
                         }
                     }
                     pictureDialog.show()
+                }
+                R.id.btn_save ->{
+                    addHappyPlaceRecord()
                 }
                 // we need this else block to make the compiler happy when using more kotlin like when statement.
                 else -> Unit
@@ -153,6 +170,8 @@ class AddHappyPlaceFragment : Fragment(), View.OnClickListener {
             cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
             updateDateInView()
         }
+        // update the date field when closing the date picker
+        updateDateInView()
     }
 
     // 0 ->
@@ -220,8 +239,8 @@ class AddHappyPlaceFragment : Fragment(), View.OnClickListener {
                         val selectImageBitmap =
                             MediaStore.Images.Media.getBitmap(context?.contentResolver, contentURI)
                         // todo: call the new method here
-                        val saveImageToInternalStorage = saveImageToInternalStorage(selectImageBitmap)
-                        Log.e("Saved image", "Path :: $saveImageToInternalStorage")
+                        uriFilePath = saveImageToInternalStorage(selectImageBitmap)
+                        Log.e("Saved image", "Path :: $uriFilePath")
                         binding.ivPlaceImage.setImageBitmap(selectImageBitmap)
                     } catch (e: IOException) {
                         e.printStackTrace()
@@ -234,8 +253,8 @@ class AddHappyPlaceFragment : Fragment(), View.OnClickListener {
                 }
             } else if (requestCode == CAMERA) {
                 val thumbnail: Bitmap = data!!.extras!!.get("data") as Bitmap
-                val saveImageToInternalStorage = saveImageToInternalStorage(thumbnail)
-                Log.e("Saved image", "Path :: $saveImageToInternalStorage")
+                uriFilePath = saveImageToInternalStorage(thumbnail)
+                Log.e("Saved image", "Path :: $uriFilePath")
                 binding.ivPlaceImage.setImageBitmap(thumbnail)
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {
@@ -294,6 +313,50 @@ class AddHappyPlaceFragment : Fragment(), View.OnClickListener {
 
         // Return the saved image uri
         return Uri.parse(file.absolutePath)
+    }
+
+    /** ======================== DATABASE/ROOM ============================================== */
+    private fun addHappyPlaceRecord() {
+        // Title
+        val title = binding.etTitle.text.toString()
+
+        // Description
+        val description = binding.etDescription.text.toString()
+
+        // Date
+        val date = binding.etDate.text.toString()
+
+        // Location
+        val location = binding.etLocation.text.toString()
+
+        // Image
+        val image = uriFilePath.toString()
+
+        if(title.isNotEmpty() && description.isNotEmpty() && location.isNotEmpty() && image.isNotEmpty()) {
+            lifecycleScope.launch {
+                val newData = HappyPlaceModelEntity(
+                    id = 0,
+                    title = title,
+                    image = image,
+                    description = description,
+                    date = date,
+                    location = location,
+                    latitude = latitude,
+                    longitude = longitude
+                )
+                Toast.makeText(
+                    context,
+                    "Record Saved",
+                    Toast.LENGTH_LONG
+                ).show()
+                happyPlaceViewModel.insertDataVM(newData)
+                // clear the field after we added som new data
+                binding.etTitle.text?.clear()
+                binding.etDescription.text?.clear()
+                binding.etLocation.text?.clear()
+                findNavController().navigate(R.id.action_addHappyPlaceFragment_to_happyPlacesFragment)
+            }
+        }
     }
 
     override fun onDestroy() {
